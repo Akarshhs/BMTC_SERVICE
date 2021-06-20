@@ -8,7 +8,7 @@ const connectDB = (callback) => {
             MongoClient.connect('mongodb://localhost:27017', { useUnifiedTopology: true }, (err, client) => {
                 if (!err) {
                     console.log(`Connected successfully to the Database`);
-                    database = client.db('bus_services');
+                    database = client.db('BMTC');
                     resolve(database);
                 } else {
                     reject(err);

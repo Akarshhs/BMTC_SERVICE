@@ -1,9 +1,11 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
-const user = require('./src/routes/api/user')
-var cors = require('cors');
-var bodyParser = require('body-parser');
+const user = require('./src/routes/api/user');
+const conductor = require('./src/routes/api/conductor')
+const cors = require('cors');
+const morgan = require('morgan');
+const bodyParser = require('body-parser');
 
 
 //Load Config
@@ -23,27 +25,12 @@ const options = {
 
 
 app.use(bodyParser.json());
-//app.use(bodyParser);
 
 
-app.use(function(req, res, next) {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Credentials", "true");
-    res.setHeader(
-        "Access-Control-Allow-Methods",
-        "GET,HEAD,OPTIONS,POST,PUT,DELETE"
-    );
-    res.setHeader(
-        "Access-Control-Allow-Headers",
-        "Origin,Cache-Control,Accept,X-Access-Token ,X-Requested-With, Content-Type, Access-Control-Request-Method"
-    );
-    if (req.method === "OPTIONS") {
-        return res.status(200).end();
-    }
-    next();
-});
 
-app.use('/api', user);
+app.use(morgan(':method :status :url'))
+app.use('/api/user', user);
+app.use('/api/bus', conductor);
 
 
 app.listen(PORT, () => {

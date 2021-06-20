@@ -1,14 +1,10 @@
-const { getUserDetails, insertUserDetails, modifyUser } = require('../../controllers/expense')
+const { getUserDetails, insertUserDetails, modifyUser, getUserTransactions, insertUserTransaction, getUserTicket } = require('../../controllers/user');
+
 const router = require('express').Router();
-const cors = require('cors');
-const bodyParser = require('body-parser')
 
-const express = require('express');
-const { request } = require('express');
-let ORIGIN = 'http://localhost:3000'
-const app = express();
 
-router.get('/user/login', async(request, response) => {
+
+router.post('/login', async(request, response) => {
     try {
         let userDetails = await getUserDetails(request);
         if (userDetails && userDetails.length) {
@@ -32,9 +28,7 @@ router.get('/user/login', async(request, response) => {
     }
 
 });
-
-
-router.post('/user/signup', async(request, response) => {
+router.post('/signup', async(request, response) => {
     try {
         let result = await insertUserDetails(request);
         if (result && result.insertedCount) {
@@ -57,19 +51,19 @@ router.post('/user/signup', async(request, response) => {
     }
 })
 
-router.put('/user/modify-user/:id', async(request, response) => {
+router.put('/modify-user', async(request, response) => {
     try {
-        console.log("inside the put controller")
         let result = await modifyUser(request);
         if (result && result.modifiedCount) {
             response.json({
                 success: true,
-                data: []
+                message: "User updated successfully",
+                data: request.body.pid
             })
         } else {
             response.json({
                 success: false,
-                message: `Failed to update ${request.params.id}`
+                message: `User document missing in the body for ${request.body.pid}`
             })
         }
     } catch (e) {
@@ -79,33 +73,69 @@ router.put('/user/modify-user/:id', async(request, response) => {
         })
     }
 })
-
-// router.get(':id', (req, res) => {
-//     //Get a particular document
-// })
-
-
-router.post('/api', cors({
-    origin: 'http://localhost:3000'
-}), async(req, res, next) => {
+router.get('/transaction/:id', async(request, response) => {
     try {
-        let result = await insertExpenseDetails(req);
-        result ? res.status(200).json({ 'success': true }) : res.status(404).json({ 'success': false })
+        let result = await getUserTransactions(request);
+        if (result) {
+            response.json({
+                success: true,
+                data: result
+            })
+        } else {
+            response.json({
+                success: false,
+                message: `Failed to fetch passenger ${request.params.id} transactions`
+            })
+        }
+
     } catch (e) {
-        res.status(404).json({ 'success': false })
+        response.json({
+            success: false,
+            message: e
+        })
     }
 })
-
-router.get('/api/totalprice', cors({
-    origin: 'http://localhost:3000'
-}), async(req, res) => {
+router.post('/transaction', async(request, response) => {
     try {
-        console.log('inside the routes');
-        let result = await getTotalExpense(req);
-        res.status(200).json({ 'success': true, 'cost': result })
+        console.log("inside the 102")
+        let result = await insertUserTransaction(request);
+        if (result) {
+            response.json({
+                success: true,
+                data: result
+            })
+        } else {
+            response.json({
+                success: false,
+                message: `Failed to Insert user transaction`
+            })
+        }
     } catch (e) {
-        console.log('e is', e)
-        res.status(404).json({ 'success': false });
+        response.json({
+            success: false,
+            message: e
+        })
+    }
+})
+router.get('/ticket/:id', async(request, response) => {
+    try {
+        let result = await getUserTicket(request);
+        if (result) {
+            response.json({
+                success: true,
+                data: result
+            })
+        } else {
+            response.json({
+                success: false,
+                message: `Failed to fetch passenger ticket ${request.params.id}`
+            })
+        }
+    } catch (e) {
+        response.json({
+            success: false,
+            message: e
+        })
     }
 })
 
