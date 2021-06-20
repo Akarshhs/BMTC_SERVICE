@@ -33,6 +33,6 @@ app.use('/api/user', user);
 app.use('/api/bus', conductor);
 
 
-app.listen(PORT, () => {
+app.listen(PORT,'0.0.0.0',() => {
     console.log(`Server started on the ${PORT}`)
 })
